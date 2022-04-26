@@ -1,0 +1,8 @@
+.memo{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    .memo__component{
+        border-bottom: 1px solid black;
+    }
+}

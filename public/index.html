@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>メモ帳</title>
+    <script src="../src/js/notepad.js"></script>
+    <link rel="stylesheet" href="../src/scss/style.css">
+</head>
+<body>
+    <main>
+        <form class="memo" accept-charset="UTF-8">
+            <div class="title memo__component">
+                <span>タイトル：</span>
+                <input class="title__text" type="text">
+                <input class="btn btn__save" type="button" value="保存">
+            </div>
+            <div class="bigtext memo__component">
+                <span>本文：</span>
+                <textarea class="bigtext__text" rows="15" cols="150"></textarea>
+            </div>
+            <div class="files memo__component">
+                <span>ファイル一覧：</span>
+                <input class="btn btn__open" type="button" value="開く">
+                <input class="btn btn__del" type="button" value="削除">
+                <select id="files" size="5"></select>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

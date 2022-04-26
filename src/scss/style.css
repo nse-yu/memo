@@ -1,0 +1,9 @@
+.memo {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+}
+.memo .memo__component {
+  border-bottom: 1px solid black;
+}
+/*# sourceMappingURL=style.css.map */
