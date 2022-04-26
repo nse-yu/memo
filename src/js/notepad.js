@@ -12,7 +12,6 @@ window.onload = () => {
     //初期処理
     list_notepad();
 
-
     /**[POST]btn__saveによって発火するイベントリスナー */
     function write_notepad(){
         const title = document.querySelector(".title__text");
@@ -42,8 +41,8 @@ window.onload = () => {
         const req = ajaxRequest("write","POST",req_body);
 
         //コールバック定義
-        let func = (req) => {
-            console.log(req);
+        let func = () => {
+            list_notepad()
         }
         onCompleted(req,func);
 
@@ -65,7 +64,13 @@ window.onload = () => {
 
         //TODO:ajax request
         let req_body = {title:title};
-        ajaxRequest("del","POST",req_body);
+        let req = ajaxRequest("del","GET",req_body);
+
+        //コールバック定義
+        let func = () => {
+            list_notepad();
+        }
+        onCompleted(req,func);
 
         return false;
     }
@@ -92,6 +97,7 @@ window.onload = () => {
         //コールバック定義
         let func = req => {
             let res = JSON.parse(req.responseText);
+            console.log(res);
             document.querySelector(".title__text").value = res["title"];
             document.querySelector(".bigtext__text").value = res["body"];
         }
@@ -107,10 +113,10 @@ window.onload = () => {
 
     /**セレクトボックスで選択されているファイル名を返す */
     function get_selected_title(){
-        const files = document.querySelector("files");
-        for(let i = 0;i < files.length;i++){
-            if(files.children.item(i).selected){
-                return files.children.item(i).value;
+        const files = document.querySelector("#files");
+        for(let i = 0;i < files.children.length;i++){
+            if(files.children[i].selected){
+                return files.children[i].value;
             }
         }
     }
@@ -120,12 +126,26 @@ window.onload = () => {
         display_status("ファイル一覧を更新しています。");
 
         //TODO:ajax request
-        ajaxRequest("","GET",{});
+        let req = ajaxRequest("","GET",{});
+
+        //コールバック定義
+        let func = req => {
+            let select = document.querySelector("#files");
+            Array.from(select.childNodes).forEach(child => {
+                select.removeChild(child);
+            });
+            for(let file of req.responseText.split(","))
+            {
+                let textNode = document.createTextNode(file);
+                let opt = document.createElement("option");
+                opt.setAttribute("value",file);
+                opt.appendChild(textNode);
+                select.appendChild(opt);
+            }
+        }
+        onCompleted(req,func);
+
         return false;
-    }
-
-    function display_files(){
-
     }
 
     /**Ajaxリクエストのためのインスタンスを生成 */
@@ -143,24 +163,24 @@ window.onload = () => {
 
         //FIXME:送信処理
         if(req){
-            let param = (method === "GET") ? "?"+ToQueryParam(req_body) : "";
+            let param = (method === "GET") ? ToQueryParam(req_body) : "";
             req.open(method,`http://localhost:8080/${host}`+param);
             req.setRequestHeader('Content-Type','application/json;');
-            //req.overrideMimeType('application/json;charset=Shift-JIS');
-            req.send(ToJSON(req_body));
+            req.send(JSON.stringify(req_body));
         }
         return req;
     }
 
     /**オブジェクトをクエリ文字列に変換して返す */
     function ToQueryParam(data){
+        if(Object.keys(data).length === 0) return "";
         let query = [];
         let i = 0;
         for(key in data){
             query[i] = key + "=" + data[key];
             i++;
         }
-        return query.join("&");
+        return "?"+query.join("&");
     }
 
     /**リクエストオブジェクトから完了ステータスが返されたときのコールバックを設定する */
